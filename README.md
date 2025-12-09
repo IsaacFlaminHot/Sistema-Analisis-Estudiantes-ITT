@@ -7,13 +7,13 @@ y exportación a CSV.
 
 ## Repositorio
 
-Este proyecto está disponible en GitHub: [saacFlaminHot/Proyecto-Analisis-Estudiantil](https://github.com/saacFlaminHot/Proyecto-Analisis-Estudiantil)
+Este proyecto está disponible en GitHub: [IsaacFlaminHot/Sistema-Analisis-Estudiantes-ITT](https://github.com/IsaacFlaminHot/Sistema-Analisis-Estudiantes-ITT)
 
 ## Requisitos
 - Python 3.10+
 - PowerShell (Windows)
 
-## Instalaci 3n
+## Instalación
 ```powershell
 # Estar en el directorio del proyecto
 python -m venv .venv
@@ -24,7 +24,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-Visita `http://127.0.0.1:5000/`. Reg edstrate en `/auth/register` y luego inicia sesi 3n.
+Visita `http://127.0.0.1:5000/`. Regístrate en `/auth/register` y luego inicia sesión.
 
 ## Importar Excel
 - Hoja con columnas: `matricula, nombre, carrera, semestre, materia, nota, asistencia, periodo`
@@ -35,5 +35,5 @@ Visita `http://127.0.0.1:5000/`. Reg edstrate en `/auth/register` y luego inicia
 - `Datos -> Estudiantes -> Exportar CSV`
 
 ## Notas
-- La base SQLite se crea autom 1ticamente en `data.db` en la carpeta del proyecto.
-- Para generar im genes est ticas de gr ficos podr as usar Kaleido; en esta versi 3n los gr ficos se renderizan en el navegador con Plotly.
+- La base SQLite se crea automáticamente en `data.db` en la carpeta del proyecto.
+- Para generar imágenes estáticas de gráficos podrías usar Kaleido; en esta versión los gráficos se renderizan en el navegador con Plotly.
