@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Editar Estudiante{% endblock %}
+{% block content %}
+<h3>Editar estudiante</h3>
+<form method="post" class="row g-3" action="">
+	<div class="col-md-2">
+		<label class="form-label">Matrícula</label>
+		<input class="form-control" name="matricula" value="{{ e.matricula }}" required>
+	</div>
+	<div class="col-md-2">
+		<label class="form-label">Apellido paterno</label>
+		<input class="form-control" name="apellido_paterno" value="{{ e.apellido_paterno }}" required>
+	</div>
+	<div class="col-md-2">
+		<label class="form-label">Apellido materno</label>
+		<input class="form-control" name="apellido_materno" value="{{ e.apellido_materno }}" required>
+	</div>
+	<div class="col-md-2">
+		<label class="form-label">Nombre(s)</label>
+		<input class="form-control" name="nombres" value="{{ e.nombres }}" required>
+	</div>
+	<div class="col-md-1">
+		<label class="form-label">Género</label>
+		<select name="genero" class="form-select">
+			<option value="">Género</option>
+			<option value="Masculino" {% if e.genero=='Masculino' %}selected{% endif %}>Masculino</option>
+			<option value="Femenino" {% if e.genero=='Femenino' %}selected{% endif %}>Femenino</option>
+			<option value="Otro" {% if e.genero=='Otro' %}selected{% endif %}>Otro</option>
+		</select>
+	</div>
+	<div class="col-md-1">
+		<label class="form-label">Modalidad</label>
+		<select name="modalidad" class="form-select">
+			<option value="">Modalidad</option>
+			<option value="Presencial" {% if e.modalidad=='Presencial' %}selected{% endif %}>Presencial</option>
+			<option value="Virtual" {% if e.modalidad=='Virtual' %}selected{% endif %}>Virtual</option>
+			<option value="Mixta" {% if e.modalidad=='Mixta' %}selected{% endif %}>Mixta</option>
+		</select>
+	</div>
+	<div class="col-md-1">
+		<label class="form-label">Carrera</label>
+		<select name="carrera_id" class="form-select">
+			<option value="">Carrera</option>
+			{% for c in carreras %}
+			<option value="{{ c.id }}" {% if c.nombre==e.carrera %}selected{% endif %}>{{ c.nombre }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-md-1">
+		<label class="form-label">Semestre</label>
+		<input class="form-control" type="number" min="1" max="12" name="semestre" value="{{ e.semestre }}" required>
+	</div>
+	<div class="col-md-1">
+		<label class="form-label">Estado</label>
+		<select name="estado" class="form-select">
+			{% for s in ['Activo','Desertor','Egresado'] %}
+			<option value="{{ s }}" {% if e.estado==s %}selected{% endif %}>{{ s }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-12">
+		<a class="btn btn-secondary" href="/data/estudiantes">Cancelar</a>
+		<button class="btn btn-primary">Guardar cambios</button>
+	</div>
+</form>
+{% endblock %}

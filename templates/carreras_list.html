@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Carreras{% endblock %}
+{% block content %}
+<h3 class="mb-3">Carreras</h3>
+<div class="card mb-3">
+	<div class="card-header">Agregar carrera</div>
+	<div class="card-body">
+		<form method="post" action="/data/carreras/create" class="row g-2">
+			<div class="col-md-6"><input class="form-control" name="nombre" placeholder="Nombre de la carrera" required></div>
+			<div class="col-md-3"><input class="form-control" name="clave" placeholder="Clave (opcional)"></div>
+			<div class="col-md-3"><button class="btn btn-primary w-100">Guardar</button></div>
+		</form>
+	</div>
+</div>
+<div class="card">
+	<div class="card-header">Listado</div>
+	<table class="table mb-0 align-middle">
+		<thead><tr><th>Nombre</th><th>Clave</th><th class="text-end">Acciones</th></tr></thead>
+		<tbody>
+			{% for c in carreras %}
+			<tr>
+				<td>
+					<form method="post" action="/data/carreras/{{ c.id }}/edit" class="row g-2 align-items-center">
+						<div class="col-md-7"><input class="form-control" name="nombre" value="{{ c.nombre }}" required></div>
+						<div class="col-md-3"><input class="form-control" name="clave" value="{{ c.clave or '' }}"></div>
+						<div class="col-md-2 text-end"><button class="btn btn-sm btn-outline-primary">Actualizar</button></div>
+					</form>
+				</td>
+				<td class="d-none d-md-table-cell">{{ c.clave }}</td>
+				<td class="text-end">
+					<form method="post" action="/data/carreras/{{ c.id }}/delete" class="d-inline" onsubmit="return confirm('¿Eliminar carrera?');">
+						<button class="btn btn-sm btn-outline-danger">Eliminar</button>
+					</form>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

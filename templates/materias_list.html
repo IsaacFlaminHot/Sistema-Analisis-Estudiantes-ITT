@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Materias{% endblock %}
+{% block content %}
+<h3 class="mb-3">Materias</h3>
+<div class="card mb-3">
+	<div class="card-header">Agregar materia</div>
+	<div class="card-body">
+		<form method="post" action="/data/materias/create" class="row g-2">
+			<div class="col-md-5">
+				<input class="form-control" name="nombre" placeholder="Nombre" required>
+			</div>
+			<div class="col-md-3">
+				<select name="carrera_id" class="form-select">
+					<option value="">Sin carrera específica</option>
+					{% for c in carreras %}
+					<option value="{{ c.id }}">{{ c.nombre }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-md-2">
+				<input class="form-control" type="number" min="1" max="12" name="semestre" placeholder="Semestre" required>
+			</div>
+			<div class="col-md-2">
+				<button class="btn btn-primary w-100">Guardar</button>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="card">
+	<div class="card-header">Listado</div>
+	<table class="table mb-0 align-middle">
+		<thead><tr><th>Nombre</th><th>Carrera</th><th>Semestre</th><th class="text-end">Acciones</th></tr></thead>
+		<tbody>
+			{% for m in materias %}
+			<tr>
+				<td>
+					<form method="post" action="/data/materias/{{ m.id }}/edit" class="row g-2 align-items-center">
+						<div class="col-md-5">
+							<input class="form-control" name="nombre" value="{{ m.nombre }}" required>
+						</div>
+						<div class="col-md-3">
+							<select name="carrera_id" class="form-select">
+								<option value="">Sin carrera específica</option>
+								{% for c in carreras %}
+								<option value="{{ c.id }}" {% if m.carrera_id==c.id %}selected{% endif %}>{{ c.nombre }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-md-2">
+							<input class="form-control" type="number" min="1" max="12" name="semestre" value="{{ m.semestre }}" required>
+						</div>
+						<div class="col-md-2 text-end">
+							<button class="btn btn-sm btn-outline-primary">Actualizar</button>
+						</div>
+					</form>
+				</td>
+				<td class="d-none d-md-table-cell">
+					{% if m.carrera_rel %}
+						{{ m.carrera_rel.nombre }}
+					{% else %}
+						<span class="text-muted">-</span>
+					{% endif %}
+				</td>
+				<td class="d-none d-md-table-cell">{{ m.semestre }}</td>
+				<td class="text-end">
+					<form method="post" action="/data/materias/{{ m.id }}/delete" class="d-inline" onsubmit="return confirm('¿Eliminar materia?');">
+						<button class="btn btn-sm btn-outline-danger">Eliminar</button>
+					</form>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

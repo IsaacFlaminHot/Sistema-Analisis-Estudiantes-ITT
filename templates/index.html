@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3">
+	<div class="col-md-4">
+		<div class="card h-100">
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<span>Bienvenido</span>
+				<button onclick="exportarGrafico('hist', 'histograma_calificaciones.png')" class="btn btn-sm btn-outline-secondary">Exportar PNG</button>
+			</div>
+			<div class="card-body">
+				<ul class="list-unstyled">
+					<li><strong>Total estudiantes:</strong> {{ indicadores.total }}</li>
+					<li><strong>Reprobación promedio:</strong> {{ indicadores.reprobacion_prom }}%</li>
+					<li><strong>Deserción estimada:</strong> {{ indicadores.desercion_est }}%</li>
+				</ul>
+				<div id="hist"></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="card mb-3">
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<span>Análisis de Pareto - Factores de Deserción</span>
+				<div class="d-flex align-items-center gap-2">
+					<label class="form-label mb-0">Filtrar por semestre:</label>
+					<select class="form-select form-select-sm" id="filtro-semestre-pareto" style="width: auto;">
+						<option value="">Todos los semestres</option>
+						{% for sem in semestres %}
+						<option value="{{ sem }}">Semestre {{ sem }}</option>
+						{% endfor %}
+					</select>
+					<button onclick="exportarGrafico('pareto', 'pareto_factores_desercion.png')" class="btn btn-sm btn-outline-secondary">Exportar PNG</button>
+				</div>
+			</div>
+			<div class="card-body"><div id="pareto"></div></div>
+		</div>
+		<div class="card">
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<span>Diagrama de dispersión</span>
+				<button onclick="exportarGrafico('disp', 'dispersion_asistencia_calificacion.png')" class="btn btn-sm btn-outline-secondary">Exportar PNG</button>
+			</div>
+			<div class="card-body"><div id="disp"></div></div>
+		</div>
+	</div>
+</div>
+<script>
+	// Histograma de notas del index
+	const graph = {{ graph_json|safe }};
+	Plotly.newPlot('hist', graph.data, graph.layout);
+	
+	// Función para cargar gráfico de Pareto con filtro de semestre
+	function cargarPareto(semestre = '') {
+		let url = '/data/charts/pareto';
+		if (semestre) {
+			url += '?semestre=' + encodeURIComponent(semestre);
+		}
+		
+		fetch(url)
+			.then(r => {
+				if (!r.ok) throw new Error('Error al cargar datos');
+				return r.json();
+			})
+			.then(fig => {
+				if (fig.data && fig.data.length > 0) {
+					Plotly.newPlot('pareto', fig.data, fig.layout);
+				} else if (fig.layout && fig.layout.annotations) {
+					// Si hay un mensaje de error o sin datos en las anotaciones, mostrarlo
+					Plotly.newPlot('pareto', fig.data || [], fig.layout);
+				} else {
+					document.getElementById('pareto').innerHTML = '<p class="text-muted text-center py-4">No hay datos para mostrar</p>';
+				}
+			})
+			.catch(err => {
+				console.error('Error cargando Pareto:', err);
+				document.getElementById('pareto').innerHTML = '<p class="text-danger text-center py-4">Error al cargar el análisis: ' + err.message + '</p>';
+			});
+	}
+	
+	// Cargar gráfico de Pareto inicialmente
+	cargarPareto();
+	
+	// Función para exportar gráficos usando Plotly del lado del cliente
+	function exportarGrafico(divId, filename) {
+		const div = document.getElementById(divId);
+		if (!div) {
+			alert('Gráfico no encontrado');
+			return;
+		}
+		
+		// Obtener el gráfico de Plotly
+		const gd = div.querySelector('.js-plotly-plot') || div;
+		
+		// Usar Plotly para exportar la imagen
+		Plotly.downloadImage(gd, {
+			format: 'png',
+			width: 1200,
+			height: 800,
+			filename: filename
+		}).catch(function(err) {
+			console.error('Error al exportar:', err);
+			alert('Error al exportar el gráfico. Por favor, intente nuevamente.');
+		});
+	}
+	
+	// Actualizar cuando cambie el filtro de semestre
+	document.getElementById('filtro-semestre-pareto').addEventListener('change', function() {
+		cargarPareto(this.value);
+	});
+	
+	// Cargar gráfico de dispersión
+	fetch('/data/charts/dispersion').then(r=>r.json()).then(fig=>Plotly.newPlot('disp', fig.data, fig.layout));
+</script>
+{% endblock %}

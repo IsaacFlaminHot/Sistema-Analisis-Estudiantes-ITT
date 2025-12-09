@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Importar Excel{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-6">
+		<div class="card">
+			<div class="card-header">Importar datos desde Excel</div>
+			<div class="card-body">
+				<form method="post" enctype="multipart/form-data">
+					<div class="mb-3">
+						<label class="form-label">Archivo .xlsx</label>
+						<input type="file" name="archivo" accept=".xlsx" class="form-control" required>
+					</div>
+					<p class="text-muted">
+						<strong>Columnas requeridas:</strong> matricula, carrera, semestre, materia, nota, asistencia, periodo.<br>
+						<strong>Opcional:</strong> nombre (o apellido_paterno, apellido_materno, nombres).
+					</p>
+					<button class="btn btn-primary">Importar</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

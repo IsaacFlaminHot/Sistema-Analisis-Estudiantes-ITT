@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Factores de Riesgo{% endblock %}
+{% block content %}
+<h3>Factores de Riesgo - {{ e.matricula }} · {{ e.apellido_paterno }} {{ e.apellido_materno }} {{ e.nombres }}</h3>
+<div class="card mb-3">
+	<div class="card-header">Registrar nuevo factor</div>
+	<div class="card-body">
+		<form method="post" class="row g-2">
+			<div class="col-md-3">
+				<select name="tipo" class="form-select" required>
+					<option value="">Tipo</option>
+					<option value="Académico">Académico</option>
+					<option value="Psicosocial">Psicosocial</option>
+					<option value="Económico">Económico</option>
+					<option value="Institucional">Institucional</option>
+					<option value="Tecnológico">Tecnológico</option>
+					<option value="Contextual">Contextual</option>
+				</select>
+			</div>
+			<div class="col-md-5">
+				<input class="form-control" name="valor" placeholder="Descripción / Detalle (motivo principal)" required>
+			</div>
+			<div class="col-md-3">
+				<input class="form-control" name="periodo" placeholder="Periodo (ej. 2025-1)" required>
+			</div>
+			<div class="col-md-1"><button class="btn btn-primary w-100">Agregar</button></div>
+		</form>
+	</div>
+</div>
+<div class="card">
+	<div class="card-header">Listado</div>
+	<table class="table mb-0 align-middle">
+		<thead><tr><th>Tipo</th><th>Descripción</th><th>Periodo</th><th class="text-end">Acciones</th></tr></thead>
+		<tbody>
+			{% for f in factores %}
+			<tr>
+				<td><form method="post" action="/data/factores/{{ f.id }}/edit" class="row g-2 align-items-center">
+					<div class="col-md-5">
+						<select name="tipo" class="form-select">
+							<option value="Académico" {% if f.tipo=='Académico' %}selected{% endif %}>Académico</option>
+							<option value="Psicosocial" {% if f.tipo=='Psicosocial' %}selected{% endif %}>Psicosocial</option>
+							<option value="Económico" {% if f.tipo=='Económico' %}selected{% endif %}>Económico</option>
+							<option value="Institucional" {% if f.tipo=='Institucional' %}selected{% endif %}>Institucional</option>
+							<option value="Tecnológico" {% if f.tipo=='Tecnológico' %}selected{% endif %}>Tecnológico</option>
+							<option value="Contextual" {% if f.tipo=='Contextual' %}selected{% endif %}>Contextual</option>
+						</select>
+					</div>
+					<div class="col-md-5"><input class="form-control" name="valor" value="{{ f.valor }}"></div>
+					<div class="col-md-2"><input class="form-control" name="periodo" value="{{ f.periodo }}"></div>
+					<div class="col-md-12 text-end mt-2"><button class="btn btn-sm btn-outline-primary">Actualizar</button></div>
+				</form></td>
+				<td class="d-none d-md-table-cell">{{ f.valor }}</td>
+				<td class="d-none d-md-table-cell">{{ f.periodo }}</td>
+				<td class="text-end">
+					<form method="post" action="/data/factores/{{ f.id }}/delete" class="d-inline" onsubmit="return confirm('¿Eliminar factor?');">
+						<button class="btn btn-sm btn-outline-danger">Eliminar</button>
+					</form>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<div class="mt-3"><a class="btn btn-secondary" href="/data/estudiantes">Volver</a></div>
+{% endblock %}

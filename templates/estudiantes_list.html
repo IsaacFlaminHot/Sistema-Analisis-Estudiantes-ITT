@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% block title %}Estudiantes{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<h3>Estudiantes</h3>
+	<div class="btn-group" role="group">
+		<a href="/data/export/csv" id="export-csv-link" class="btn btn-outline-secondary">Exportar CSV</a>
+		<a href="/data/export/csv?formato=excel" id="export-excel-link" class="btn btn-outline-secondary">Exportar Excel</a>
+	</div>
+</div>
+<div class="card mb-3">
+	<div class="card-header">Filtros</div>
+	<div class="card-body">
+		<form method="get" action="/data/estudiantes" class="row g-2">
+			<div class="col-md-4">
+				<label class="form-label">Carrera</label>
+				<select name="carrera_id" class="form-select" id="filtro-carrera">
+					<option value="">Todas las carreras</option>
+					{% for c in carreras %}
+					<option value="{{ c.id }}" {% if carrera_id_selected and carrera_id_selected|int == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label class="form-label">Materia</label>
+				<select name="materia_id" class="form-select" id="filtro-materia" disabled>
+					<option value="">Todas las materias</option>
+					{% for m in materias %}
+					<option value="{{ m.id }}" data-carrera-id="{{ m.carrera_id }}" {% if materia_id_selected and materia_id_selected|int == m.id %}selected{% endif %}>{{ m.nombre }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-md-2">
+				<label class="form-label">&nbsp;</label>
+				<button type="submit" class="btn btn-primary w-100">Filtrar</button>
+			</div>
+			<div class="col-md-2">
+				<label class="form-label">&nbsp;</label>
+				<a href="/data/estudiantes" class="btn btn-outline-secondary w-100">Limpiar</a>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="card mb-3">
+	<div class="card-header">Registrar estudiante</div>
+	<div class="card-body">
+		<form method="post" action="/data/estudiantes/create" class="row g-2">
+			<div class="col-md-2">
+				<input class="form-control" name="matricula" placeholder="Matrícula" required>
+			</div>
+			<div class="col-md-2">
+				<input class="form-control" name="apellido_paterno" placeholder="Apellido paterno" required>
+			</div>
+			<div class="col-md-2">
+				<input class="form-control" name="apellido_materno" placeholder="Apellido materno" required>
+			</div>
+			<div class="col-md-2">
+				<input class="form-control" name="nombres" placeholder="Nombre(s)" required>
+			</div>
+			<div class="col-md-1">
+				<select name="genero" class="form-select">
+					<option value="">Género</option>
+					<option value="Masculino">Masculino</option>
+					<option value="Femenino">Femenino</option>
+					<option value="Otro">Otro</option>
+				</select>
+			</div>
+			<div class="col-md-1">
+				<select name="modalidad" class="form-select">
+					<option value="">Modalidad</option>
+					<option value="Presencial">Presencial</option>
+					<option value="Virtual">Virtual</option>
+					<option value="Mixta">Mixta</option>
+				</select>
+			</div>
+			<div class="col-md-1">
+				<select class="form-select" name="carrera_id" required>
+					<option value="">Carrera</option>
+					{% for c in carreras %}
+					<option value="{{ c.id }}">{{ c.nombre }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-md-1">
+				<input class="form-control" name="semestre" type="number" min="1" max="12" placeholder="Sem." required>
+			</div>
+			<div class="col-md-1">
+				<button class="btn btn-primary w-100">Guardar</button>
+			</div>
+		</form>
+		{% if not carreras %}
+			<p class="text-danger mt-2">No hay carreras registradas. Primero agrega alguna en Datos → Carreras.</p>
+		{% endif %}
+	</div>
+</div>
+<div class="card">
+	<div class="card-header">Listado</div>
+	<table class="table mb-0 align-middle">
+		<thead><tr><th>Matrícula</th><th>Apellido Paterno</th><th>Apellido Materno</th><th>Nombre(s)</th><th>Género</th><th>Modalidad</th><th>Carrera</th><th>Semestre</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+		<tbody>
+			{% for e in estudiantes %}
+			<tr>
+				<td>{{ e.matricula }}</td>
+				<td>{{ e.apellido_paterno }}</td>
+				<td>{{ e.apellido_materno }}</td>
+				<td>{{ e.nombres }}</td>
+				<td>{{ e.genero }}</td>
+				<td>{{ e.modalidad }}</td>
+				<td>{{ e.carrera }}</td>
+				<td>{{ e.semestre }}</td>
+				<td>{{ e.estado }}</td>
+				<td class="text-end">
+					<a class="btn btn-sm btn-outline-info" href="/data/estudiantes/{{ e.id }}/calificaciones">Calificaciones</a>
+					<a class="btn btn-sm btn-outline-primary" href="/data/estudiantes/{{ e.id }}/edit">Editar</a>
+					{% if e.estado == 'Desertor' %}
+					<a class="btn btn-sm btn-danger" href="/data/estudiantes/{{ e.id }}/factores" title="Factores de riesgo de deserción">Factores</a>
+					{% else %}
+					<button class="btn btn-sm btn-outline-secondary" disabled title="Solo disponible para estudiantes con estado 'Desertor'">Factores</button>
+					{% endif %}
+					<form method="post" action="/data/estudiantes/{{ e.id }}/delete" class="d-inline" onsubmit="return confirm('¿Eliminar estudiante?');">
+						<button class="btn btn-sm btn-outline-danger">Eliminar</button>
+					</form>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<script>
+	const filtroMateria = document.getElementById('filtro-materia');
+	const filtroCarrera = document.getElementById('filtro-carrera');
+	const exportCsvLink = document.getElementById('export-csv-link');
+	const exportExcelLink = document.getElementById('export-excel-link');
+	
+	// Guardar todas las opciones de materia originales y el valor seleccionado
+	const todasLasMaterias = Array.from(filtroMateria.options).map(opt => ({
+		value: opt.value,
+		text: opt.text,
+		carreraId: opt.getAttribute('data-carrera-id'),
+		selected: opt.selected
+	}));
+	const materiaSeleccionadaOriginal = filtroMateria.value;
+	
+	// Función para filtrar materias basándose en la carrera seleccionada
+	function filtrarMateriasPorCarrera() {
+		const carreraId = filtroCarrera.value;
+		
+		if (!carreraId) {
+			// Si no hay carrera seleccionada, deshabilitar materia
+			filtroMateria.disabled = true;
+			filtroMateria.value = '';
+			// Restaurar todas las opciones
+			filtroMateria.innerHTML = '<option value="">Todas las materias</option>';
+			todasLasMaterias.slice(1).forEach(materia => {
+				const option = document.createElement('option');
+				option.value = materia.value;
+				option.textContent = materia.text;
+				option.setAttribute('data-carrera-id', materia.carreraId || '');
+				if (materia.selected) option.selected = true;
+				filtroMateria.appendChild(option);
+			});
+		} else {
+			// Habilitar el selector de materia
+			filtroMateria.disabled = false;
+			
+			// Limpiar opciones actuales
+			filtroMateria.innerHTML = '<option value="">Todas las materias</option>';
+			
+			const carreraIdInt = parseInt(carreraId);
+			
+			// Filtrar materias: mostrar solo las que pertenecen a esta carrera o no tienen carrera específica
+			todasLasMaterias.slice(1).forEach(materia => {
+				const materiaCarreraId = materia.carreraId && materia.carreraId !== 'None' && materia.carreraId !== '' 
+					? parseInt(materia.carreraId) 
+					: null;
+				
+				// Mostrar la materia si:
+				// 1. Pertenece a la carrera seleccionada, o
+				// 2. No tiene carrera específica (carrera_id es NULL)
+				if (materiaCarreraId === carreraIdInt || materiaCarreraId === null) {
+					const option = document.createElement('option');
+					option.value = materia.value;
+					option.textContent = materia.text;
+					option.setAttribute('data-carrera-id', materia.carreraId || '');
+					if (materia.selected) option.selected = true;
+					filtroMateria.appendChild(option);
+				}
+			});
+			
+			// Restaurar el valor seleccionado original si existe y está disponible
+			if (materiaSeleccionadaOriginal) {
+				const optionExists = Array.from(filtroMateria.options).some(opt => opt.value === materiaSeleccionadaOriginal);
+				if (optionExists) {
+					filtroMateria.value = materiaSeleccionadaOriginal;
+				}
+			}
+		}
+		
+		updateExportLink();
+	}
+	
+	// Actualizar enlaces de exportar CSV y Excel cuando cambien los filtros
+	function updateExportLink() {
+		const carreraId = filtroCarrera.value;
+		const materiaId = filtroMateria.value;
+		
+		const params = [];
+		
+		if (carreraId) {
+			params.push('carrera_id=' + encodeURIComponent(carreraId));
+		}
+		if (materiaId) {
+			params.push('materia_id=' + encodeURIComponent(materiaId));
+		}
+		
+		// URL base para CSV
+		let urlCsv = '/data/export/csv';
+		if (params.length > 0) {
+			urlCsv += '?' + params.join('&');
+		}
+		exportCsvLink.href = urlCsv;
+		
+		// URL para Excel
+		let urlExcel = '/data/export/csv?formato=excel';
+		if (params.length > 0) {
+			urlExcel += '&' + params.join('&');
+		} else {
+			urlExcel = '/data/export/csv?formato=excel';
+		}
+		exportExcelLink.href = urlExcel;
+	}
+	
+	// Inicializar cuando se carga la página
+	if (filtroCarrera.value) {
+		filtrarMateriasPorCarrera();
+	} else {
+		updateExportLink();
+	}
+	
+	// Actualizar cuando cambie la carrera
+	filtroCarrera.addEventListener('change', filtrarMateriasPorCarrera);
+	
+	// Actualizar cuando cambie la materia
+	filtroMateria.addEventListener('change', updateExportLink);
+</script>
+{% endblock %}

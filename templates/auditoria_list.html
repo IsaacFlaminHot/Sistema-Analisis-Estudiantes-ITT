@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Auditoría{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+	<h3>Registro de Auditoría</h3>
+	{% if filtro_entidad %}
+		<a href="/data/auditoria" class="btn btn-outline-secondary">Ver todos los registros</a>
+	{% endif %}
+</div>
+{% if filtro_entidad %}
+	<div class="alert alert-info mb-3">
+		Mostrando registros de auditoría para: <strong>{{ filtro_entidad }} #{{ filtro_id }}</strong>
+	</div>
+{% endif %}
+<div class="card">
+	<div class="card-header">Historial de Cambios</div>
+	<div class="card-body p-0">
+		<div class="table-responsive">
+			<table class="table mb-0">
+				<thead>
+					<tr>
+						<th>Fecha y Hora</th>
+						<th>Usuario</th>
+						<th>Acción</th>
+						<th>Entidad</th>
+						<th>ID</th>
+						<th>Descripción</th>
+						<th class="text-end">Detalles</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% if logs %}
+						{% for log in logs %}
+						<tr>
+							<td>
+								<small>{{ log.fecha.strftime('%d/%m/%Y %H:%M:%S') if log.fecha else 'N/A' }}</small>
+							</td>
+							<td>
+								<strong>{{ log.usuario_nombre or 'Sistema' }}</strong>
+							</td>
+							<td>
+								{% if log.accion == 'CREATE' %}
+									<span class="badge bg-success">CREAR</span>
+								{% elif log.accion == 'UPDATE' %}
+									<span class="badge bg-primary">ACTUALIZAR</span>
+								{% elif log.accion == 'DELETE' %}
+									<span class="badge bg-danger">ELIMINAR</span>
+								{% else %}
+									<span class="badge bg-secondary">{{ log.accion }}</span>
+								{% endif %}
+							</td>
+							<td>{{ log.entidad }}</td>
+							<td>
+								{% if log.entidad_id %}
+									<code>{{ log.entidad_id }}</code>
+								{% else %}
+									<span class="text-muted">-</span>
+								{% endif %}
+							</td>
+							<td>
+								<small>{{ log.descripcion or '-' }}</small>
+							</td>
+							<td class="text-end">
+								{% if log.datos_anteriores or log.datos_nuevos %}
+									<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalle-{{ log.id }}" aria-expanded="false">
+										Ver detalles
+									</button>
+								{% else %}
+									<span class="text-muted">-</span>
+								{% endif %}
+							</td>
+						</tr>
+						{% if log.datos_anteriores or log.datos_nuevos %}
+						<tr>
+							<td colspan="7" class="p-0">
+								<div class="collapse" id="detalle-{{ log.id }}">
+									<div class="p-3 bg-dark">
+										{% if log.datos_anteriores %}
+											<div class="mb-2">
+												<strong class="text-danger">Datos Anteriores:</strong>
+												<pre class="text-light bg-black p-2 rounded mt-1 mb-0" style="font-size: 0.85rem; max-height: 200px; overflow-y: auto;">{{ log.datos_anteriores }}</pre>
+											</div>
+										{% endif %}
+										{% if log.datos_nuevos %}
+											<div>
+												<strong class="text-success">Datos Nuevos:</strong>
+												<pre class="text-light bg-black p-2 rounded mt-1 mb-0" style="font-size: 0.85rem; max-height: 200px; overflow-y: auto;">{{ log.datos_nuevos }}</pre>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+							</td>
+						</tr>
+						{% endif %}
+						{% endfor %}
+					{% else %}
+						<tr>
+							<td colspan="7" class="text-center text-muted py-4">
+								No hay registros de auditoría disponibles
+							</td>
+						</tr>
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
