@@ -1,0 +1,49 @@
+[MASTER]
+# Archivos y directorios a ignorar
+ignore=tests,venv,.venv,__pycache__,migrations
+
+# Extensión de archivos a analizar
+extension-pkg-whitelist=
+
+[MESSAGES CONTROL]
+# Deshabilitar mensajes específicos
+disable=
+    missing-docstring,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-instance-attributes,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    import-error,
+    no-member,
+    too-many-public-methods
+
+[FORMAT]
+# Longitud máxima de línea
+max-line-length=120
+
+# Estilo de indentación
+indent-string='\t'
+
+[BASIC]
+# Nombres de variables permitidos
+good-names=i,j,k,ex,Run,_,id,db,app
+
+[DESIGN]
+# Número máximo de argumentos
+max-args=10
+
+# Número máximo de atributos
+max-attributes=15
+
+# Número máximo de métodos públicos
+max-public-methods=30
+
+# Número máximo de métodos
+max-methods=50
+
+[IMPORTS]
+# Orden de imports
+import-order=google
+

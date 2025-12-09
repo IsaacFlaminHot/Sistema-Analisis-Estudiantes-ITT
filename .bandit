@@ -1,0 +1,20 @@
+[bandit]
+# Nivel de confianza y severidad mínima
+confidence_level = medium
+severity_level = medium
+
+# Excluir directorios
+exclude_dirs = tests,venv,.venv,__pycache__,migrations
+
+# Incluir pruebas
+tests = []
+
+# Archivos a analizar
+targets = app/
+
+# Formato de salida
+output_format = json
+
+# Nivel de verbosidad
+verbose = 1
+
