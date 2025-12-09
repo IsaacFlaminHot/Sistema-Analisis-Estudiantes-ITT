@@ -179,3 +179,7 @@ Al ejecutar el pipeline, deberías ver:
 ### Documentación Completa
 
 Para más detalles sobre el pipeline de CI/CD, consulta la [Documentación Completa de CI/CD](docs/CI_CD_DOCUMENTATION.md).
+
+### Cambio de prueba para CI
+
+Este bloque se agregó para validar que el pipeline de GitHub Actions se ejecute correctamente tras un commit de prueba.
